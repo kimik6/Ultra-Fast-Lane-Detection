@@ -1,6 +1,8 @@
 import torch
 from model.backbone import resnet
 import numpy as np
+import sys
+import os
 sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
 
 from efficientvit.cls_model_zoo import create_cls_model
