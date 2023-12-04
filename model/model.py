@@ -2,13 +2,11 @@ import torch
 from model.backbone import resnet
 import numpy as np
 sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
-from networks.vit_seg_modeling import SegmentationHead
-# from torch.nn.parallel import DistributedDataParallel as DDP
-import torch.distributed as dist
-import torch.backends.cudnn as cudnn
 
-from networks.vit_seg_modeling import VisionTransformer as ViT_seg
-from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
+from efficientvit.cls_model_zoo import create_cls_model
+from efficientvit.clscore.data_provider import ImageNetDataProvider
+from efficientvit.clscore.trainer import ClsRunConfig, ClsTrainer
+from efficientvit.models.nn.drop import apply_drop_func
 
 class conv_bn_relu(torch.nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1,bias=False):
@@ -41,7 +39,7 @@ class parsingNet(torch.nn.Module):
         # output: (w+1) * sample_rows * 4 
         #self.model = resnet(backbone, pretrained=pretrained)
 
-        self.model = net=nn.DataParallel(net)
+        self.model = create_cls_model('b0-r224',pretrained= False)
         if self.use_aux:
             self.aux_header2 = torch.nn.Sequential(
                 conv_bn_relu(128, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(512, 128, kernel_size=3, stride=1, padding=1),
