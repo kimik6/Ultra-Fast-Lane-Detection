@@ -6,7 +6,7 @@ import os
 sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
 
 from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b0
-
+from efficientvit/models/efficientvit/backbone import efficientvit_cls_b0
 class conv_bn_relu(torch.nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1,bias=False):
         super(conv_bn_relu,self).__init__()
@@ -38,7 +38,9 @@ class parsingNet(torch.nn.Module):
         # output: (w+1) * sample_rows * 4 
         #self.model = resnet(backbone, pretrained=pretrained)
 
-        self.model =  efficientvit_backbone_b0()
+        # self.model =  efficientvit_backbone_b0()
+
+        self.model = efficientvit_cls_b0(
 
         if self.use_aux:
             self.aux_header2 = torch.nn.Sequential(
@@ -82,7 +84,12 @@ class parsingNet(torch.nn.Module):
     def forward(self, x):
         # n c h w - > n 2048 sh sw
         # -> n 2048
-        x2,x3,fea = self.model(x)
+        # x2,x3,fea = self.model(x)
+
+        outs = self.model(x)
+        fea=outs['stage_final']
+        x3=outs['stage3']
+        x2=out['stage2']
         if self.use_aux:
             x2 = self.aux_header2(x2)
             x3 = self.aux_header3(x3)
