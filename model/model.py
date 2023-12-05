@@ -5,10 +5,7 @@ import sys
 import os
 sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
 
-from efficientvit.cls_model_zoo import create_cls_model
-from efficientvit.clscore.data_provider import ImageNetDataProvider
-from efficientvit.clscore.trainer import ClsRunConfig, ClsTrainer
-from efficientvit.models.nn.drop import apply_drop_func
+from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b0
 
 class conv_bn_relu(torch.nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1,bias=False):
@@ -41,7 +38,8 @@ class parsingNet(torch.nn.Module):
         # output: (w+1) * sample_rows * 4 
         #self.model = resnet(backbone, pretrained=pretrained)
 
-        self.model = create_cls_model('b0-r224',pretrained= False)
+        self.model =  efficientvit_backbone_b0()
+
         if self.use_aux:
             self.aux_header2 = torch.nn.Sequential(
                 conv_bn_relu(128, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(512, 128, kernel_size=3, stride=1, padding=1),
@@ -74,7 +72,7 @@ class parsingNet(torch.nn.Module):
             torch.nn.Linear(2048, self.total_dim),
         )
 
-        self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18'] else torch.nn.Conv2d(2048,8,1)
+        self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18'] else torch.nn.Conv2d(128,8,1)
         # 1/32,2048 channel
         # 288,800 -> 9,40,2048
         # (w+1) * sample_rows * 4
