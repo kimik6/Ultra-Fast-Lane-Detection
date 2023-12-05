@@ -6,7 +6,7 @@ import os
 sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
 
 from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b0
-from efficientvit/models/efficientvit/backbone import efficientvit_cls_b0
+from efficientvit.models.efficientvit.backbone import efficientvit_cls_b0
 class conv_bn_relu(torch.nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1,bias=False):
         super(conv_bn_relu,self).__init__()
