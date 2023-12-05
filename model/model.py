@@ -6,7 +6,8 @@ import os
 sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
 
 from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b0
-from efficientvit.models.efficientvit.backbone import efficientvit_cls_b0
+from efficientvit.models.efficientvit.cls import ClsHead
+
 class conv_bn_relu(torch.nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1,bias=False):
         super(conv_bn_relu,self).__init__()
@@ -40,7 +41,7 @@ class parsingNet(torch.nn.Module):
 
         # self.model =  efficientvit_backbone_b0()
 
-        self.model = efficientvit_cls_b0()
+        self.model = efficientvit_backbone_b0()
 
         if self.use_aux:
             self.aux_header2 = torch.nn.Sequential(
@@ -68,11 +69,19 @@ class parsingNet(torch.nn.Module):
             )
             initialize_weights(self.aux_header2,self.aux_header3,self.aux_header4,self.aux_combine)
 
-        self.cls = torch.nn.Sequential(
-            torch.nn.Linear(1800, 2048),
-            torch.nn.ReLU(),
-            torch.nn.Linear(2048, self.total_dim),
-        )
+        # self.cls = torch.nn.Sequential(
+        #     torch.nn.Linear(1800, 2048),
+        #     torch.nn.ReLU(),
+        #     torch.nn.Linear(2048, self.total_dim),
+        # )
+
+
+        self.cls=head = ClsHead(
+        in_channels=128,
+        width_list=[1024, 1280],
+        n_classes=self.total_dim,
+        # **build_kwargs_from_config(kwargs, ClsHead),
+        ) 
 
         self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18'] else torch.nn.Conv2d(128,8,1)
         # 1/32,2048 channel
@@ -89,7 +98,7 @@ class parsingNet(torch.nn.Module):
         outs = self.model(x)
         fea=outs['stage_final']
         x3=outs['stage3']
-        x2=out['stage2']
+        x2=outs['stage2']
         if self.use_aux:
             x2 = self.aux_header2(x2)
             x3 = self.aux_header3(x3)
@@ -103,7 +112,8 @@ class parsingNet(torch.nn.Module):
 
         fea = self.pool(fea).view(-1, 1800)
 
-        group_cls = self.cls(fea).view(-1, *self.cls_dim)
+        group_cls = self.cls(outs).view(-1, *self.cls_dim)
+        print(group_cls.shape)
 
         if self.use_aux:
             return group_cls, aux_seg
