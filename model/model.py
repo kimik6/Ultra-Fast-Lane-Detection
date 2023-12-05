@@ -40,7 +40,7 @@ class parsingNet(torch.nn.Module):
 
         # self.model =  efficientvit_backbone_b0()
 
-        self.model = efficientvit_cls_b0(
+        self.model = efficientvit_cls_b0()
 
         if self.use_aux:
             self.aux_header2 = torch.nn.Sequential(
