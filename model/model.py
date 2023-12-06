@@ -96,7 +96,7 @@ class parsingNet(torch.nn.Module):
         else:
             aux_seg = None
 
-        fea = self.pool(fea).view(-1, 1800)
+        #fea = self.pool(fea).view(-1, 1800)
 
         group_cls = self.cls(outs).view(-1, *self.cls_dim)
         print(group_cls.shape)
