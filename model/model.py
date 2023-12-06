@@ -7,6 +7,7 @@ sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
 
 from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b0
 from efficientvit.models.efficientvit.cls import ClsHead
+from efficientvit.models.efficientvit.seg import SegHead
 
 class conv_bn_relu(torch.nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1,bias=False):
@@ -44,30 +45,21 @@ class parsingNet(torch.nn.Module):
         self.model = efficientvit_backbone_b0()
 
         if self.use_aux:
-            self.aux_header2 = torch.nn.Sequential(
-                conv_bn_relu(128, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(32, 128, kernel_size=3, stride=1, padding=1),
-                conv_bn_relu(128,128,3,padding=1),
-                conv_bn_relu(128,128,3,padding=1),
-                conv_bn_relu(128,128,3,padding=1),
-            )
-            self.aux_header3 = torch.nn.Sequential(
-                conv_bn_relu(256, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(64, 128, kernel_size=3, stride=1, padding=1),
-                conv_bn_relu(128,128,3,padding=1),
-                conv_bn_relu(128,128,3,padding=1),
-            )
-            self.aux_header4 = torch.nn.Sequential(
-                conv_bn_relu(512, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(128, 128, kernel_size=3, stride=1, padding=1),
-                conv_bn_relu(128,128,3,padding=1),
-            )
-            self.aux_combine = torch.nn.Sequential(
-                conv_bn_relu(384, 256, 3,padding=2,dilation=2),
-                conv_bn_relu(256, 128, 3,padding=2,dilation=2),
-                conv_bn_relu(128, 128, 3,padding=2,dilation=2),
-                conv_bn_relu(128, 128, 3,padding=4,dilation=4),
-                torch.nn.Conv2d(128, cls_dim[-1] + 1,1)
-                # output : n, num_of_lanes+1, h, w
-            )
-            initialize_weights(self.aux_header2,self.aux_header3,self.aux_header4,self.aux_combine)
+            self.aux_header = SegHead(
+            fid_list=["stage4", "stage3", "stage2"],
+            in_channel_list=[128, 64, 32],
+            stride_list=[32, 16, 8],
+            head_stride=8,
+            head_width=32,
+            head_depth=2,
+            expand_ratio=4,
+            middle_op="mbconv",
+            final_expand=4,
+            n_classes=cls_dim[-1] + 1,
+            # **build_kwargs_from_config(kwargs, SegHead),
+        )
+            
+            initialize_weights(self.aux_header)
 
         # self.cls = torch.nn.Sequential(
         #     torch.nn.Linear(1800, 2048),
@@ -96,17 +88,11 @@ class parsingNet(torch.nn.Module):
         # x2,x3,fea = self.model(x)
 
         outs = self.model(x)
-        fea=outs['stage4']
-        x3=outs['stage3']
-        x2=outs['stage2']
+        # fea=outs['stage4']
+        # x3=outs['stage3']
+        # x2=outs['stage2']
         if self.use_aux:
-            x2 = self.aux_header2(x2)
-            x3 = self.aux_header3(x3)
-            x3 = torch.nn.functional.interpolate(x3,scale_factor = 2,mode='bilinear')
-            x4 = self.aux_header4(fea)
-            x4 = torch.nn.functional.interpolate(x4,scale_factor = 4,mode='bilinear')
-            aux_seg = torch.cat([x2,x3,x4],dim=1)
-            aux_seg = self.aux_combine(aux_seg)
+            aux_seg  = self.aux_header(outs)
         else:
             aux_seg = None
 
