@@ -45,18 +45,18 @@ class parsingNet(torch.nn.Module):
 
         if self.use_aux:
             self.aux_header2 = torch.nn.Sequential(
-                conv_bn_relu(16, 16, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(32, 16, kernel_size=3, stride=1, padding=1),
-                conv_bn_relu(16,16,3,padding=1),
-                conv_bn_relu(16,16,3,padding=1),
-                conv_bn_relu(16,16,3,padding=1),
+                conv_bn_relu(128, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(32, 128, kernel_size=3, stride=1, padding=1),
+                conv_bn_relu(128,128,3,padding=1),
+                conv_bn_relu(128,128,3,padding=1),
+                conv_bn_relu(128,128,3,padding=1),
             )
             self.aux_header3 = torch.nn.Sequential(
-                conv_bn_relu(256, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(64, 16, kernel_size=3, stride=1, padding=1),
+                conv_bn_relu(256, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(64, 128, kernel_size=3, stride=1, padding=1),
                 conv_bn_relu(128,128,3,padding=1),
                 conv_bn_relu(128,128,3,padding=1),
             )
             self.aux_header4 = torch.nn.Sequential(
-                conv_bn_relu(512, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(128, 16, kernel_size=3, stride=1, padding=1),
+                conv_bn_relu(512, 128, kernel_size=3, stride=1, padding=1) if backbone in ['34','18'] else conv_bn_relu(128, 128, kernel_size=3, stride=1, padding=1),
                 conv_bn_relu(128,128,3,padding=1),
             )
             self.aux_combine = torch.nn.Sequential(
@@ -96,7 +96,7 @@ class parsingNet(torch.nn.Module):
         # x2,x3,fea = self.model(x)
 
         outs = self.model(x)
-        fea=outs['stage_final']
+        fea=outs['stage4']
         x3=outs['stage3']
         x2=outs['stage2']
         if self.use_aux:
