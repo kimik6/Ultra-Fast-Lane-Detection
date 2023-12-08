@@ -50,7 +50,7 @@ class LaneClsDataset(torch.utils.data.Dataset):
         self.num_lanes = num_lanes
 
         with open(list_path, 'r') as f:
-            self.list = f.readlines()
+            self.list = f.readlines()[:100]
 
         self.row_anchor = row_anchor
         self.row_anchor.sort()
