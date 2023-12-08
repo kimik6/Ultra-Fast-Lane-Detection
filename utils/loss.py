@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 import numpy as np
 
-from tverskyloss import TverskyLoss
+from .tverskyloss import TverskyLoss
 
 class OhemCELoss(nn.Module):
     def __init__(self, thresh, n_min, ignore_lb=255, *args, **kwargs):
