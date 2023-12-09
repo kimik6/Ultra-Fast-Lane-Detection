@@ -14,18 +14,36 @@ from utils.common import get_work_dir, get_logger
 import time
 
 
+# def inference(net, data_label, use_aux):
+#     if use_aux:
+#         img, cls_label, seg_label = data_label
+#         img, cls_label, seg_label = img.cuda(), cls_label.long().cuda(), seg_label.long().cuda()
+#         cls_out, seg_out = net(img)
+#         return {'cls_out': cls_out, 'cls_label': cls_label, 'seg_out':seg_out, 'seg_label': seg_label}
+#     else:
+#         img, cls_label = data_label
+#         img, cls_label = img.cuda(), cls_label.long().cuda()
+#         cls_out = net(img)
+#         return {'cls_out': cls_out, 'cls_label': cls_label}
+
 def inference(net, data_label, use_aux):
     if use_aux:
-        img, cls_label, seg_label = data_label
-        img, cls_label, seg_label = img.cuda(), cls_label.long().cuda(), seg_label.long().cuda()
-        cls_out, seg_out = net(img)
+        # img, cls_label, seg_label = data_label
+        img = data_label[0].cuda()
+        cls_label = data_label[1].long().cuda()
+        seg_label = data_label[2].long().cuda()
+        # img, cls_label, seg_label = img.cuda(), cls_label.long().cuda(), seg_label.long().cuda()
+        y_pred = net(img)
+        cls_out = y_seg_pred[0]
+        seg_out = y_pred[1]['segout']
         return {'cls_out': cls_out, 'cls_label': cls_label, 'seg_out':seg_out, 'seg_label': seg_label}
     else:
-        img, cls_label = data_label
-        img, cls_label = img.cuda(), cls_label.long().cuda()
+        img = data_label[0]
+        cls_label = data_label[1]
+        img = img.cuda()
+        cls_label = cls_label.long().cuda()
         cls_out = net(img)
         return {'cls_out': cls_out, 'cls_label': cls_label}
-
 
 def resolve_val_data(results, use_aux):
     results['cls_out'] = torch.argmax(results['cls_out'], dim=1)
