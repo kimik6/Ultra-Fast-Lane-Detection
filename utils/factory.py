@@ -30,8 +30,8 @@ def get_loss_dict(cfg):
     if cfg.use_aux:
         loss_dict = {
             'name': ['cls_loss', 'relation_loss', 'aux_loss', 'relation_dis'],
-            'op': [SoftmaxFocalLoss(2), ParsingRelationLoss(), torch.nn.CrossEntropyLoss(), ParsingRelationDis()],
-            'weight': [1.0, cfg.sim_loss_w, 1.0, cfg.shp_loss_w],
+            'op': [SoftmaxFocalLoss(2), ParsingRelationLoss(), TverskyLoss(mode="multiclass", alpha=0.9, beta=0.1, gamma=4.0/3, from_logits=True), ParsingRelationDis()],
+            'weight': [1.0, 1.0, 1.0, 1.0],
             'data_src': [('cls_out', 'cls_label'), ('cls_out',), ('seg_out', 'seg_label'), ('cls_out',)]
         }
     else:
