@@ -34,7 +34,7 @@ def inference(net, data_label, use_aux):
         seg_label = data_label[2].long().cuda()
         # img, cls_label, seg_label = img.cuda(), cls_label.long().cuda(), seg_label.long().cuda()
         y_pred = net(img)
-        cls_out = y_seg_pred[0]
+        cls_out = y_pred[0]
         seg_out = y_pred[1]['segout']
         return {'cls_out': cls_out, 'cls_label': cls_label, 'seg_out':seg_out, 'seg_label': seg_label}
     else:
