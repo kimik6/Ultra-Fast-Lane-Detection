@@ -3,7 +3,8 @@ from model.backbone import resnet
 import numpy as np
 import sys
 import os
-sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
+# sys.path.insert(1, os.path.join(sys.path[0], '/content/efficientvit'))
+sys.path.insert(1, os.path.join(sys.path[0], '/kaggle/working/efficientvit'))
 
 from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b0
 from efficientvit.models.efficientvit.cls import ClsHead
