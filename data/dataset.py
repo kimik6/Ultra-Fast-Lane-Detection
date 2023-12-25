@@ -66,7 +66,7 @@ class LaneClsDataset(torch.utils.data.Dataset):
             label_name = label_name[1:]
 
         r= label_name.split('/')[-4]
-        print(f'the r path is {r}\n')
+        # print(f'the r path is {r}\n')
         label_path = os.path.join(self.path, r , label_name)
         # print(label_path)
         # print('koooooooooo',label_path)
