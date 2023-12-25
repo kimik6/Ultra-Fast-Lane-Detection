@@ -67,7 +67,7 @@ class LaneClsDataset(torch.utils.data.Dataset):
         r= label_name.split('/')[-4]
         label_path = os.path.join(self.path, r , label_name)
         # print(label_path)
-        print('koooooooooo',img_name)
+        print('koooooooooo',label_path)
         label = loader_func(label_path)
 
         x= img_name.split('/')[-3]
