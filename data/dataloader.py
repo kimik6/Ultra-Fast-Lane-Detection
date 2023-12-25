@@ -27,7 +27,7 @@ def get_train_loader(batch_size, data_root, griding_num, dataset, use_aux, distr
     ])
     if dataset == 'CULane':
         train_dataset = LaneClsDataset(data_root,
-                                           os.path.join(data_root, 'list/train_gt.txt'),
+                                           os.path.join(data_root, 'list/list/train_gt.txt'),
                                            img_transform=img_transform, target_transform=target_transform,
                                            simu_transform = simu_transform,
                                            segment_transform=segment_transform, 
