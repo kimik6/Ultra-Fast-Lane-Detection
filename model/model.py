@@ -100,7 +100,7 @@ class parsingNet(torch.nn.Module):
         #fea = self.pool(fea).view(-1, 1800)
 
         group_cls = self.cls(outs).view(-1, *self.cls_dim)
-        print(group_cls.shape)
+        # print(group_cls.shape)
 
         if self.use_aux:
             return group_cls, aux_seg
