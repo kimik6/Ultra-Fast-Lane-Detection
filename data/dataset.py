@@ -60,11 +60,13 @@ class LaneClsDataset(torch.utils.data.Dataset):
         l = self.list[index]
         l_info = l.split()
         img_name, label_name = l_info[0], l_info[1]
+        print(f'the image first path is {img_name}\nlabel first path is {label_name}\n')
         if img_name[0] == '/':
             img_name = img_name[1:]
             label_name = label_name[1:]
 
         r= label_name.split('/')[-4]
+        print(f'the r path is {r}\n')
         label_path = os.path.join(self.path, r , label_name)
         # print(label_path)
         print('koooooooooo',label_path)
