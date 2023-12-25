@@ -24,7 +24,7 @@ class LaneTestDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         name = self.list[index].split()[0]
         img_path = os.path.join(self.path, name)
-        print('oooooo ',img_path)
+        # print('oooooo ',img_path)
         img = loader_func(img_path)
 
         if self.img_transform is not None:
@@ -60,7 +60,7 @@ class LaneClsDataset(torch.utils.data.Dataset):
         l = self.list[index]
         l_info = l.split()
         img_name, label_name = l_info[0], l_info[1]
-        print(f'the image first path is {img_name}\nlabel first path is {label_name}\n')
+        # print(f'the image first path is {img_name}\nlabel first path is {label_name}\n')
         if img_name[0] == '/':
             img_name = img_name[1:]
             label_name = label_name[1:]
@@ -69,13 +69,13 @@ class LaneClsDataset(torch.utils.data.Dataset):
         print(f'the r path is {r}\n')
         label_path = os.path.join(self.path, r , label_name)
         # print(label_path)
-        print('koooooooooo',label_path)
+        # print('koooooooooo',label_path)
         label = loader_func(label_path)
 
         x= img_name.split('/')[-3]
         img_path = os.path.join(self.path, x , img_name)
         # img_path = os.path.join(self.path, img_name)
-        print('eeeeee ',img_path)
+        # print('eeeeee ',img_path)
         img = loader_func(img_path)
     
 
